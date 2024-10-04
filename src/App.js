@@ -12,7 +12,7 @@ import {
   Form,
   NavDropdown,
   Badge,
-  Modal
+  Modal,
 } from "react-bootstrap";
 import { useState } from "react";
 import pizza1 from "./Images/pizza1.jpg";
@@ -23,12 +23,10 @@ import menu2 from "./Images/menu2.jpg";
 import menu3 from "./Images/menu3.jpg";
 import menu4 from "./Images/menu4.jpg";
 
-
 function App() {
-
-    const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
 
   return (
     <Container>
@@ -123,7 +121,7 @@ function App() {
           <Card>
             <Card.Img variant="top" src={menu2} />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>pizaa</Card.Title>
               <Card.Text>
                 Some quick example text to build on the card title and make up
                 the bulk of the card's content.
@@ -136,7 +134,7 @@ function App() {
           <Card>
             <Card.Img variant="top" src={menu3} />
             <Card.Body>
-              <Card.Title>Card Title</Card.Title>
+              <Card.Title>hehe</Card.Title>
               <Card.Text>
                 Some quick example text to build on the card title and make up
                 the bulk of the card's content.
@@ -161,28 +159,26 @@ function App() {
       </Row>
 
       <Row>
-      <Button variant="primary" onClick={handleShow}>
-        Launch demo modal
-      </Button>
+        <Button variant="primary" onClick={handleShow}>
+          Launch demo modal
+        </Button>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Modal heading</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={handleClose}>
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Row>
     </Container>
-
-    
   );
 }
 
