@@ -1,93 +1,170 @@
-import React, { useState } from "react";
-import { Container, Row } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import "./styles/styles.scss";
-import Header from "./components/Header";
-import CarouselItem from "./components/Carousel";
-import CardList from "./components/CardList";
-import CartModal from "./components/CartModal"; // Renamed ModalItem to CartModal
+import {
+  Container,
+  Row,
+  Table,
+  Col,
+  Button,
+  FormControl,
+  Form,
+  ThemeProvider,
+} from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useState } from "react";
 
-const App = () => {
-  const [showCart, setShowCart] = useState(false); // Cart modal state
-  const [cart, setCart] = useState([]); // Cart state
-  const [count, setCount] = useState(0); // Cart item count
+function App() {
+  const [students, setStudents] = useState([]);
+  const [studentName, setStudentName] = useState("");
+  const [studentCode, setStudentCode] = useState("");
+  const [isActive, setIsActive] = useState(false);
 
-  // Function to show the cart modal (called from Header)
-  const handleShowCartModal = () => {
-    setShowCart(true); // Show the cart modal
+  // Add student with dynamic status based on isActive state
+  const handleAddStudent = () => {
+    if (studentName && studentCode) {
+      const newStudent = {
+        name: studentName,
+        code: studentCode,
+        status: isActive ? "Active" : "Inactive",
+        selected: false,
+      };
+      setStudents([newStudent, ...students]);
+      setStudentName("");
+      setStudentCode("");
+      setIsActive(false);
+    }
   };
 
-  // Function to close the cart modal
-  const handleCloseCart = () => setShowCart(false);
-
-  // Function to add an item to the cart
-  const handleAddToCart = (item, quantity) => {
-    // Check if the item is already in the cart
-    const existingItem = cart.find((cartItem) => cartItem.title === item.title);
-
-    if (existingItem) {
-      // Update quantity for existing item
-      const updatedCart = cart.map((cartItem) =>
-        cartItem.title === item.title
-          ? { ...cartItem, quantity: cartItem.quantity + quantity }
-          : cartItem
-      );
-      setCart(updatedCart);
-    } else {
-      // Add new item to the cart
-      const newItem = { ...item, quantity };
-      setCart([...cart, newItem]);
-    }
-
-    // Update total item count in the cart
-    setCount((prevCount) => prevCount + quantity);
+  // Toggle student selection and update status
+  const handleSelectStudent = (index) => {
+    const updatedStudents = students.map((student, i) =>
+      i === index
+        ? {
+            ...student,
+            selected: !student.selected,
+            // status: !student.selected ? "Active" : "Inactive",
+          }
+        : student
+    );
+    setStudents(updatedStudents);
   };
 
-  // Function to update the quantity of a cart item
-  const updateCart = (index, newQuantity) => {
-    const updatedCart = [...cart];
-    if (newQuantity === 0) {
-      updatedCart.splice(index, 1); // Remove item if quantity is 0
-    } else {
-      updatedCart[index].quantity = newQuantity; // Update the quantity
-    }
-    setCart(updatedCart);
+  // Delete a student from the list
+  const handleDeleteStudent = (index) => {
+    const updatedStudents = students.filter((_, i) => i !== index);
+    setStudents(updatedStudents);
+  };
 
-    // Update the cart count (sum of all item quantities)
-    const newCount = updatedCart.reduce((acc, item) => acc + item.quantity, 0);
-    setCount(newCount);
+  // Clear all students
+  const handleClearSelection = () => {
+    setStudents([]);
   };
 
   return (
-    <Container fluid className="app-container ">
-      {/* Pass handleShowCartModal and count to Header for cart display */}
-      <Header handleShow={handleShowCartModal} count={count} />
+    <ThemeProvider>
+      <Container className="mt-5">
+        <Row>
+          <Col>
+            <h2>
+              Total Selected Student:{" "}
+              {students.filter((s) => s.selected).length}
+            </h2>
+          </Col>
+          <Col>
+            <Button variant="primary" onClick={handleClearSelection}>
+              Clear
+            </Button>
+          </Col>
+        </Row>
 
-      {/* Carousel Section */}
-      <div className="carousel-section ">
-        <CarouselItem />
-      </div>
+        <Row className="mt-5">
+          <Col>
+            <Form.Group className="mb-3">
+              <FormControl
+                placeholder="Enter student name"
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+              />
+            </Form.Group>
 
-      {/* Display CardList and pass handleAddToCart to handle purchases */}
-      <Row className="justify-content-center card-list-section">
-        {/* Tiêu đề "Our Menu" */}
-        <h2 className="menu-title text-center mt-5 mb-4">Our Menu</h2>
-        <CardList
-          apiUrl="https://api-demo-4gqb.onrender.com/products"
-          handleAddToCart={handleAddToCart}
-        />
-      </Row>
+            <Form.Group className="mb-3">
+              <FormControl
+                placeholder="Enter student code"
+                className="mt-2"
+                value={studentCode}
+                onChange={(e) => setStudentCode(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Check
+              type="checkbox"
+              label="Still Active"
+              checked={isActive}
+              onChange={(e) => setIsActive(e.target.checked)}
+              className="mt-2"
+            />
+          </Col>
+          <Col>
+            <Button variant="success" onClick={handleAddStudent}>
+              Add
+            </Button>
+          </Col>
+        </Row>
 
-      {/* CartModal to show cart data */}
-      <CartModal
-        show={showCart}
-        handleClose={handleCloseCart}
-        cart={cart} // Pass the cart for display
-        updateCart={updateCart} // Pass updateCart function to CartModal
-      />
-    </Container>
+        <Row className="mt-5">
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Select</th>
+                <th>Student Name</th>
+                <th>Student Code</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {students.map((student, index) => (
+                <tr key={index}>
+                  <td>
+                    <Form.Check
+                      type="checkbox"
+                      checked={student.selected}
+                      onChange={() => handleSelectStudent(index)}
+                    />
+                  </td>
+                  <td>{student.name}</td>
+                  <td>{student.code}</td>
+                  <td>
+                    <span
+                      className={`badge rounded-pill ${
+                        student.status === "Active"
+                          ? "bg-info text-white"
+                          : "bg-danger text-white"
+                      }`}
+                      style={{
+                        padding: "8px 12px",
+                        fontSize: "14px",
+                        opacity: student.status === "Active" ? 1 : 0.5,
+                        transition: "opacity 0.3s ease-in-out",
+                      }}
+                    >
+                      {student.status}
+                    </span>
+                  </td>
+                  <td>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleDeleteStudent(index)}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Row>
+      </Container>
+    </ThemeProvider>
   );
-};
+}
 
 export default App;
